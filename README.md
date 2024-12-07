@@ -1,5 +1,6 @@
 # Advent of Code 2024 - Unix Edition
 
+## Kick-off
 Advent of Code 2024 hat begonnen und damit wieder der Ruf nach Weiterentwicklung der eigenen Fähigkeiten. Eric Wastl liefert jedes Jahr eine großartige Plattform, um mit festlicher Motivation und Spaß der eigenen (E)Xpertise etwas Gutes zu tun. Advent of Code ist, was man aus ihm macht. Wer sich mit anderen ein Punkterennen um die am schnellsten gefundene Lösung liefern möchte, findet im privaten (oder globalen) Leaderboard eine spaßige Herausforderung mit einer Prise Wettbewerbsnervenkitzel. Für mich eine nette Nebenquest die gerne mit abfallen darf, aber nicht das ganze Potential von AoC. Es eignet sich z.B. hervorragend zum Lernen einer Programmiersprache, die man dem eigenen Repertoire hinzufügen will, weit abseits von HelloWorld!-Minimalbeispielen oder der berüchtigten Tutorial-Hölle. Ein dedizierter Fokus auf Laufzeiteffiziente Lösungen kann auch ein persönliches Ziel sein. Dabei rückt vielleicht die ein oder andere bessere Methode in den Vordergrund, die ggf. unbedacht ineffiziente Gewohnheiten aus dem gefestigten Repertoire ablösen. Die Möglichkeiten sind vielfältig und die Plattform ein fantastischer Lernkatalysator.
 
 Ich habe zahlreiche Ideen, was ich aus dem diesjährigen Advent of Code für mich machen könnte. Leider werde ich dieses Jahr durch Familie und andere kurzfristige Dezember-Prioritäten nur sehr wenig Zeit für Advent of Code haben. Das finde ich schon jetzt sehr schade, denn Nachholen ist einfach nicht dasselbe. Wenigstens den Auftakt von AoC lasse ich mir aber nicht nehmen und habe meine diesjährige Waffe gewählt: **shell + unix utilities**.
@@ -9,6 +10,8 @@ Inspiriert durch Gary Bernhardts fantastischen Vortrag ["The Unix Chainsaw"](htt
 > _Half-assed is OK when you only need half of an ass_
 
 In diesem Sinne, hier der Auftakt: [Tag 1 von Advent of Code](https://adventofcode.com/2024/day/1).
+
+### Tag 1
 
 Aufgabe verstanden. Linke und rechte Spalte jeweils in aufsteigender Reihenfolge numerisch sortieren und den Betrag der Differenz pro Zeile aufaddieren. Ein typischer erster Tag, noch schön einfach.
 
@@ -170,3 +173,50 @@ azerifox@Defiant aoc-2024 % paste <(awk '{print $1}' aoc24-01.txt | sort -n) <(a
 Das war eine gute Übung!
 
 Sollte jemand neue Motivation und vielleicht sogar Inspiration gefunden haben, aus Advent of Code etwas persönliches für sich rauszuholen, dann habe ich mein Ziel erfüllt. Wir freuen uns über neue Gesichter im #AdventOfCode channel.
+
+Zweiter Teil (und folgende) nur als Lösung:
+
+awk mit ausgelagertem awk-Programm, weil inline zu komplex: `awk -f part2.awk < aoc24-01.txt`
+
+part2.awk:
+```awk
+{
+    # Track frequency per input from right list
+    freq[$2]++
+    # Keep left list as array
+    left[NR] = $1
+}
+END {
+    sum = 0
+    for(i = 1; i <= NR; i++) {
+        num = left[i]
+        if(num in freq) {
+            sum += num * freq[num]
+        }
+    }
+    print sum
+}
+```
+
+### Tag 2:
+
+```shell
+cat 02.txt | ./day02.sh | grep -E  "^(([1-3]\s?)+|(-[1-3]\s?)+)$" | wc -l
+```
+
+day02.sh:
+```bash
+#!/bin/bash
+
+while read -r line; do
+    prev=""
+    diffs=""
+    for num in $line; do
+        if [ ! -z $prev ]; then
+            diffs+="$(($num - $prev)) "
+        fi
+        prev=$num
+    done
+    echo "$diffs"
+done
+```
