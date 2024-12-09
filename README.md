@@ -220,3 +220,20 @@ while read -r line; do
     echo "$diffs"
 done
 ```
+
+### Tag 3
+
+```shell
+cat 03.txt | grep -oE "mul\([0-9]+,[0-9]+\)" | sed "s/mul(\(.*\))/\1/" | awk -F ',' '{sum += $1 * $2} END { print sum }'
+```
+
+Zweiter Teil (übersichtshalber Zeilenumbruch für jede Pipe hinzugefügt):
+
+
+```shell
+cat 03.txt | \
+grep -oE "(mul\([0-9]+,[0-9]+\)|do\(\)|don't\(\))" | \
+awk "/do()/ {mark=0} /don't()/ {mark=1} \!mark && \!/do/ {print}" | \
+sed "s/mul(\(.*\))/\1/" | \
+awk -F ',' '{sum += $1 * $2} END { print sum }'
+```
